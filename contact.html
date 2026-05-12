@@ -1,0 +1,228 @@
+<!-- 
+  =============================================================================
+  PROJECT: Flower of the Valleys — Student Blog
+  PAGE: Contact Us (contact.html)
+  AUTHOR: Mark Gabriel Susim
+  VERSION: 1.2
+  DESCRIPTION: Provides a validated contact form for user inquiries and 
+               frequently asked questions about the blog and the plant.
+  =============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Flower of the Valleys</title>
+  
+  <!-- SEO & Social Media Meta Tags -->
+  <meta name="description" content="Get in touch with the Flower of the Valleys blog — send a message, ask a question, or share your Lily of the Valley photos.">
+  <meta property="og:title" content="Contact Us — Flower of the Valleys">
+  <meta property="og:description" content="Reach out with questions, feedback, or your own Lily of the Valley stories.">
+  <meta property="og:image" content="flower.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="Stylesproject.css">
+  
+  <!-- Specific Styles for Form Validation -->
+  <style>
+    .field-error { color: #e53935; font-size: 0.82rem; margin-top: 0.2rem; display: block; min-height: 1rem; }
+    .form-group input.invalid, .form-group select.invalid, .form-group textarea.invalid {
+      border-color: #e53935;
+    }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN HEADER: Branding and site title -->
+  <header>
+    <div class="header-ornament-l"><i class="fas fa-spa"></i></div>
+    <div class="header-ornament-r"><i class="fas fa-spa"></i></div>
+    <h1>🌿 Flower of the Valleys</h1>
+    <p class="subtitle">A Student Blog About the Beautiful Lily of the Valley</p>
+  </header>
+
+  <!-- NAVIGATION: Sticky nav with mobile burger menu -->
+  <nav>
+    <div class="nav-inner">
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links">
+        <li><a href="Project.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="posts.html"><i class="fas fa-newspaper"></i> Blog Posts</a></li>
+        <li><a href="gallery.html"><i class="fas fa-images"></i> Gallery</a></li>
+        <li><a href="varieties.html"><i class="fas fa-spa"></i> Varieties</a></li>
+        <li><a href="care-guide.html"><i class="fas fa-seedling"></i> Care Guide</a></li>
+        <li><a href="symbolism.html"><i class="fas fa-globe"></i> Symbolism</a></li>
+        <li><a href="science.html"><i class="fas fa-flask"></i> Science</a></li>
+        <li><a href="recipes-uses.html"><i class="fas fa-leaf"></i> Creative Uses</a></li>
+        <li><a href="game.html"><i class="fas fa-gamepad"></i> Mini Game</a></li>
+        <li><a href="contact.html" class="active"><i class="fas fa-envelope"></i> Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER: Banner for the current page -->
+  <div class="page-title-band">
+    <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+    <p>Questions, comments, or your own Lily of the Valley photos? We'd love to hear from you!</p>
+  </div>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="main-content">
+    <main class="content-area">
+
+      <!-- CONTACT FORM SECTION -->
+      <div class="card">
+        <h2><i class="fas fa-paper-plane"></i> Send a Message</h2>
+        <p>Fill in the form below and we'll get back to you as soon as possible. All fields marked with <span style="color:#e53935;">*</span> are required.</p>
+
+        <!-- Success message (hidden by default) -->
+        <div class="success-message" id="successMessage">
+          <i class="fas fa-check-circle" style="color:#2e7d32;"></i>
+          <strong>Message Sent! 🌿</strong>
+          <p style="margin-top:0.5rem;color:#2e7d32;">Thank you for reaching out. We'll reply within 1–2 business days.</p>
+        </div>
+
+        <form class="contact-form" id="contactForm" novalidate>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" class="form-row">
+            <div class="form-group">
+              <label for="firstName"><i class="fas fa-user"></i> First Name <span style="color:#e53935;">*</span></label>
+              <input type="text" id="firstName" name="firstName" placeholder="e.g. Maria" required>
+              <span class="field-error" id="firstNameError"></span>
+            </div>
+            <div class="form-group">
+              <label for="lastName"><i class="fas fa-user"></i> Last Name <span style="color:#e53935;">*</span></label>
+              <input type="text" id="lastName" name="lastName" placeholder="e.g. Santos" required>
+              <span class="field-error" id="lastNameError"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Email Address <span style="color:#e53935;">*</span></label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            <span class="field-error" id="emailError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="subject"><i class="fas fa-tag"></i> Subject <span style="color:#e53935;">*</span></label>
+            <select id="subject" name="subject" required>
+              <option value="">— Select a topic —</option>
+              <option value="question">General Question</option>
+              <option value="gardening">Gardening Advice</option>
+              <option value="photo">Share a Photo</option>
+              <option value="science">Science / Botany</option>
+              <option value="symbolism">Culture &amp; Symbolism</option>
+              <option value="feedback">Blog Feedback</option>
+              <option value="other">Other</option>
+            </select>
+            <span class="field-error" id="subjectError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="message"><i class="fas fa-comment"></i> Message <span style="color:#e53935;">*</span></label>
+            <textarea id="message" name="message" placeholder="Write your message here… (minimum 20 characters)" required minlength="20"></textarea>
+            <span class="field-error" id="messageError"></span>
+          </div>
+
+          <div class="form-group">
+            <label style="flex-direction:row;align-items:center;gap:0.5rem;cursor:pointer;">
+              <input type="checkbox" id="agreeTerms" name="agreeTerms" style="width:auto;"> I understand this is a student educational blog
+            </label>
+            <span class="field-error" id="termsError"></span>
+          </div>
+
+          <button type="submit" class="btn btn-lg" id="submitBtn">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </button>
+        </form>
+      </div>
+
+      <!-- FAQ SECTION -->
+      <div class="card">
+        <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+
+        <h3><i class="fas fa-seedling"></i> Can I grow Lily of the Valley in a container?</h3>
+        <p>Yes! Plant rhizomes in a deep container with well-draining, humus-rich compost. Keep in partial shade and water consistently. The plant may need repotting or dividing every 2–3 years.</p>
+
+        <h3><i class="fas fa-exclamation-triangle"></i> My pet may have eaten some — what should I do?</h3>
+        <p>Contact a vet or animal poison control immediately. All parts of Lily of the Valley are toxic to dogs and cats. Do not wait for symptoms — act straight away.</p>
+
+        <h3><i class="fas fa-camera"></i> Can I submit my own photos?</h3>
+        <p>Yes! Send your images via the contact form above (select "Share a Photo"). Include a description of the variety and where it was taken. We may feature it on the blog.</p>
+
+        <h3><i class="fas fa-globe"></i> Where can I buy Lily of the Valley rhizomes?</h3>
+        <p>They are widely available from garden centres in autumn and spring, and from online bulb specialists. Look for named cultivars like Fortin's Giant or Rosea for something special.</p>
+      </div>
+
+    </main>
+
+    <!-- SIDEBAR AREA -->
+    <aside class="sidebar">
+      <div class="sidebar-widget">
+        <h3><i class="fas fa-info-circle"></i> About This Blog</h3>
+        <p style="font-size:0.9rem;color:#555;line-height:1.5;">This is a student educational blog created by <strong>Mark Gabriel Susim</strong> as a school project about <em>Convallaria majalis</em>.</p>
+      </div>
+
+      <div class="sidebar-widget">
+        <h3><i class="fas fa-envelope-open"></i> What to Write About</h3>
+        <ul>
+          <li><i class="fas fa-leaf"></i> Gardening questions</li>
+          <li><i class="fas fa-camera"></i> Share your photos</li>
+          <li><i class="fas fa-flask"></i> Science topics</li>
+          <li><i class="fas fa-globe"></i> Cultural traditions</li>
+          <li><i class="fas fa-star"></i> Blog feedback</li>
+          <li><i class="fas fa-spa"></i> Cultivar questions</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-widget">
+        <h3><i class="fas fa-exclamation-triangle"></i> Emergency Info</h3>
+        <div class="toxicity-alert" style="margin:0;padding:0.8rem;">
+          <i class="fas fa-exclamation-triangle" style="font-size:1.2rem;"></i>
+          <div>
+            <p style="font-size:0.85rem;margin:0;"><strong>Plant ingestion?</strong> Contact Poison Control immediately. All parts of Lily of the Valley are toxic.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-widget">
+        <h3><i class="fas fa-link"></i> Quick Links</h3>
+        <ul>
+          <li><a href="care-guide.html"><i class="fas fa-seedling"></i> Care Guide</a></li>
+          <li><a href="varieties.html"><i class="fas fa-spa"></i> Varieties</a></li>
+          <li><a href="science.html"><i class="fas fa-flask"></i> Science</a></li>
+          <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <!-- FOOTER: Copyright and educational credit -->
+  <footer>
+    <p class="footer-brand">🌿 Flower of the Valleys Student Blog © 2026</p>
+    <p>Created for educational purposes by <strong>Mark Gabriel Susim</strong></p>
+    <div class="footer-links">
+      <a href="Project.html"><i class="fas fa-home"></i> Home</a>
+      <a href="gallery.html"><i class="fas fa-images"></i> Gallery</a>
+      <a href="posts.html"><i class="fas fa-newspaper"></i> Posts</a>
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+    </div>
+    <p class="footer-credit">All content is for educational purposes.</p>
+  </footer>
+
+  <!-- CUSTOM SCRIPTS: All interactivity is handled in scripts.js -->
+  <script src="scripts.js"></script>
+</body>
+</html>

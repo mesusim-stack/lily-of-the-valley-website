@@ -1,0 +1,488 @@
+<!-- 
+  =============================================================================
+  PROJECT: Flower of the Valleys — Student Blog
+  PAGE: Photo Gallery (gallery.html)
+  AUTHOR: Mark Gabriel Susim
+  VERSION: 1.2
+  DESCRIPTION: A responsive, filterable photo gallery featuring various 
+               Lily of the Valley cultivars and garden scenes.
+  =============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery — Flower of the Valleys</title>
+  
+  <!-- SEO & Social Media Meta Tags -->
+  <meta name="description" content="Photo gallery of Lily of the Valley — beautiful images of Convallaria majalis cultivars and garden scenes.">
+  <meta property="og:title" content="Photo Gallery — Flower of the Valleys">
+  <meta property="og:description" content="Browse high-resolution images of different Lily of the Valley varieties.">
+  <meta property="og:image" content="flower.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="Stylesproject.css">
+  
+  <!-- Specific Gallery Styles -->
+  <style>
+    /* ── Filter Bar ── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      justify-content: center;
+      padding: 1.2rem 1.5rem;
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(6px);
+      border-bottom: 2px solid #e8f5e9;
+    }
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: #fff;
+      border: 2px solid #7ab956;
+      color: #5c9c6c;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      font-size: .85rem;
+      padding: .45rem 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all .25s;
+    }
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: #7ab956;
+      color: #fff;
+    }
+
+    /* ── Gallery Grid ── */
+    .gallery-wrap {
+      width: 100%;
+      margin: 2rem 0;
+      padding: 0 2rem;
+    }
+    .gallery-grid {
+      columns: 4 220px;
+      column-gap: 1.1rem;
+    }
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 1.2rem;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(27,94,32,.18);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .gallery-item:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(27,94,32,.28); }
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      transition: transform .4s;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item.hidden { display: none; }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(transparent 45%, rgba(27,94,32,.88));
+      opacity: 0;
+      transition: opacity .3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1rem;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay .ov-title { color: #fff; font-family: 'Playfair Display',serif; font-size: 1rem; font-weight: 600; }
+    .gallery-overlay .ov-tag  { color: #c8e6c9; font-size: .78rem; margin-top: .2rem; }
+    .gallery-overlay .ov-icon { color: #fff; font-size: 1.4rem; position: absolute; top: .8rem; right: .8rem; }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.94);
+      z-index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: min(90vw, 860px);
+      max-height: 72vh;
+      border-radius: 10px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+      object-fit: contain;
+    }
+    .lb-caption {
+      color: #e8f5e9;
+      margin-top: .9rem;
+      font-size: .98rem;
+      text-align: center;
+      max-width: 600px;
+    }
+    .lb-count { color: #a5d6a7; font-size: .82rem; margin-top: .3rem; }
+    .lb-close {
+      position: absolute;
+      top: 1rem; right: 1.2rem;
+      background: none; border: none;
+      color: #fff; font-size: 1.8rem;
+      cursor: pointer; transition: color .2s;
+    }
+    .lb-close:hover { color: #7ab956; }
+    .lb-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(122,185,86,.25);
+      border: 2px solid #7ab956;
+      color: #fff;
+      font-size: 1.4rem;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .25s;
+    }
+    .lb-arrow:hover { background: #7ab956; }
+    .lb-prev { left: 1rem; }
+    .lb-next { right: 1rem; }
+
+    /* ── Hero Band ── */
+    .gallery-hero {
+      background: linear-gradient(135deg,#1b5e20,#5c9c6c);
+      color: #fff;
+      text-align: center;
+      padding: 2.8rem 1.5rem 2rem;
+    }
+    .gallery-hero h2 { font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:.4rem; }
+    .gallery-hero p { opacity:.88; }
+
+    /* ── Stats Strip ── */
+    .stats-strip {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      background: rgba(255,255,255,.9);
+      padding: .9rem 1.5rem;
+      border-bottom: 1px solid #e8f5e9;
+    }
+    .stat-item { text-align: center; }
+    .stat-item .num { font-family:'Playfair Display',serif; font-size:1.5rem; color:#5c9c6c; font-weight:700; }
+    .stat-item .lbl { font-size:.78rem; color:#777; }
+
+    @media(max-width:600px){
+      .gallery-grid { columns: 1; }
+      .lb-arrow { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN HEADER: Branding and site title -->
+  <header>
+    <div class="header-ornament-l"><i class="fas fa-spa"></i></div>
+    <div class="header-ornament-r"><i class="fas fa-spa"></i></div>
+    <h1>🌿 Flower of the Valleys</h1>
+    <p class="subtitle">A Student Blog About the Beautiful Lily of the Valley</p>
+  </header>
+
+  <!-- NAVIGATION: Sticky nav with mobile burger menu -->
+  <nav>
+    <div class="nav-inner">
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links">
+        <li><a href="Project.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="posts.html"><i class="fas fa-newspaper"></i> Blog Posts</a></li>
+        <li><a href="gallery.html" class="active"><i class="fas fa-images"></i> Gallery</a></li>
+        <li><a href="varieties.html"><i class="fas fa-spa"></i> Varieties</a></li>
+        <li><a href="care-guide.html"><i class="fas fa-seedling"></i> Care Guide</a></li>
+        <li><a href="symbolism.html"><i class="fas fa-globe"></i> Symbolism</a></li>
+        <li><a href="science.html"><i class="fas fa-flask"></i> Science</a></li>
+        <li><a href="recipes-uses.html"><i class="fas fa-leaf"></i> Creative Uses</a></li>
+        <li><a href="game.html"><i class="fas fa-gamepad"></i> Mini Game</a></li>
+        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER: Banner for the current page -->
+  <div class="gallery-hero">
+    <h2><i class="fas fa-images"></i> Photo Gallery</h2>
+    <p>Click any photo to open fullscreen · Use arrow keys or buttons to navigate · Filter by category below</p>
+  </div>
+
+  <!-- STATS STRIP: Quick facts about the gallery -->
+  <div class="stats-strip">
+    <div class="stat-item"><div class="num">20</div><div class="lbl">Photos</div></div>
+    <div class="stat-item"><div class="num">4</div><div class="lbl">Categories</div></div>
+    <div class="stat-item"><div class="num">3</div><div class="lbl">Cultivars</div></div>
+    <div class="stat-item"><div class="num">1</div><div class="lbl">Beautiful Flower</div></div>
+  </div>
+
+  <!-- FILTER BAR: Category buttons -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all"><i class="fas fa-border-all"></i> All Photos</button>
+    <button class="filter-btn" data-filter="classic"><i class="fas fa-leaf"></i> Classic White</button>
+    <button class="filter-btn" data-filter="cultivar"><i class="fas fa-spa"></i> Cultivars</button>
+    <button class="filter-btn" data-filter="garden"><i class="fas fa-seedling"></i> Garden</button>
+    <button class="filter-btn" data-filter="macro"><i class="fas fa-camera"></i> Macro</button>
+  </div>
+
+  <!-- LIGHTBOX: Fullscreen image view -->
+  <div class="lightbox" id="lightbox" role="dialog">
+    <button class="lb-close" id="lbClose" aria-label="Close lightbox"><i class="fas fa-times"></i></button>
+    <button class="lb-arrow lb-prev" id="lbPrev" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+    <img id="lbImg" src="" alt="">
+    <button class="lb-arrow lb-next" id="lbNext" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+    <p class="lb-caption" id="lbCaption"></p>
+    <p class="lb-count" id="lbCount"></p>
+  </div>
+
+  <!-- MAIN GALLERY AREA -->
+  <div class="gallery-wrap">
+    <div class="gallery-grid" id="galleryGrid">
+
+      <!-- GALLERY ITEMS -->
+      <div class="gallery-item" data-cat="classic" data-src="flower.jpg" data-caption="Convallaria majalis — the classic species in full bloom" data-title="Classic White Bells">
+        <img src="flower.jpg" alt="Classic Lily of the Valley" onerror="this.src='https://placehold.co/400x300/e8f5e9/5c9c6c?text=Lily+of+the+Valley'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Classic White Bells</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Classic White</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="cultivar" data-src="fortins.jpg" data-caption="Fortin's Giant — larger blooms on stronger, taller stems" data-title="Fortin's Giant">
+        <img src="fortins.jpg" alt="Fortin's Giant" onerror="this.src='https://placehold.co/400x320/e8f5e9/5c9c6c?text=Fortins+Giant'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Fortin's Giant</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Cultivar</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="macro" data-src="flower1.jpg" data-caption="Macro shot — each bell is barely ¼ inch across, yet perfectly formed" data-title="Bell Close-Up">
+        <img src="flower1.jpg" alt="Macro bell close-up" onerror="this.src='https://placehold.co/400x500/e8f5e9/5c9c6c?text=Macro+Shot'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Bell Close-Up</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Macro</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="garden" data-src="flower.jpg" data-caption="Lily of the Valley naturalised as a dense woodland groundcover" data-title="Woodland Groundcover">
+        <img src="flower.jpg" alt="Woodland groundcover" onerror="this.src='https://placehold.co/400x260/e8f5e9/5c9c6c?text=Groundcover'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Woodland Groundcover</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Garden</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="macro" data-src="fortins.jpg" data-caption="The arching raceme carries 5–13 pendant bells in a graceful curve" data-title="The Arching Raceme">
+        <img src="fortins.jpg" alt="Flower raceme" onerror="this.src='https://placehold.co/400x400/e8f5e9/5c9c6c?text=Raceme'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">The Arching Raceme</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Macro</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="classic" data-src="flower1.jpg" data-caption="Morning dew rests on the petals — best photographed just after dawn" data-title="Morning Dew">
+        <img src="flower1.jpg" alt="Morning dew" onerror="this.src='https://placehold.co/400x300/e8f5e9/5c9c6c?text=Morning+Dew'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Morning Dew</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Classic White</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="cultivar" data-src="flower.jpg" data-caption="Cultivar comparison — different varieties bloom at slightly different times" data-title="Cultivar Study">
+        <img src="flower.jpg" alt="Cultivar study" onerror="this.src='https://placehold.co/400x350/e8f5e9/5c9c6c?text=Cultivar+Study'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Cultivar Study</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Cultivar</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="garden" data-src="fortins.jpg" data-caption="Lily of the Valley paired with hostas — a classic shaded border combination" data-title="With Hostas">
+        <img src="fortins.jpg" alt="Garden border" onerror="this.src='https://placehold.co/400x280/e8f5e9/5c9c6c?text=Garden+Border'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Paired with Hostas</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Garden</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="classic" data-src="flower1.jpg" data-caption="A freshly cut posy — vase life of 7–10 days with daily water changes" data-title="Cut Flower Posy">
+        <img src="flower1.jpg" alt="Cut flower posy" onerror="this.src='https://placehold.co/400x420/e8f5e9/5c9c6c?text=Cut+Posy'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Cut Flower Posy</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Classic White</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="macro" data-src="flower.jpg" data-caption="Detail of the six fused white tepals whose tips curl back slightly" data-title="Tepal Detail">
+        <img src="flower.jpg" alt="Tepal detail" onerror="this.src='https://placehold.co/400x300/e8f5e9/5c9c6c?text=Tepal+Detail'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Tepal Detail</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Macro</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="garden" data-src="flower1.jpg" data-caption="Under a beech canopy — the ideal naturalistic woodland setting" data-title="Woodland Setting">
+        <img src="flower1.jpg" alt="Woodland setting" onerror="this.src='https://placehold.co/400x360/e8f5e9/5c9c6c?text=Woodland'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Woodland Setting</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Garden</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="cultivar" data-src="fortins.jpg" data-caption="Fortin's Giant stem detail — noticeably sturdier than the species" data-title="Giant Stem Detail">
+        <img src="fortins.jpg" alt="Giant stem" onerror="this.src='https://placehold.co/400x330/e8f5e9/5c9c6c?text=Fortin+Stem'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Giant Stem Detail</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Cultivar</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="classic" data-src="flower.jpg" data-caption="A single stem of Convallaria majalis — simple elegance" data-title="Single Stem">
+        <img src="flower.jpg" alt="Single stem" onerror="this.src='https://placehold.co/400x500/e8f5e9/5c9c6c?text=Single+Stem'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Single Stem</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Classic White</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="garden" data-src="flower1.jpg" data-caption="Shaded border planting — Lily of the Valley thrives in deep shade" data-title="Shaded Border">
+        <img src="flower1.jpg" alt="Shaded border" onerror="this.src='https://placehold.co/400x300/e8f5e9/5c9c6c?text=Shaded+Border'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Shaded Border</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Garden</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="macro" data-src="flower.jpg" data-caption="Petal tips curl back slightly — a key identifying feature of the species" data-title="Curled Petal Tips">
+        <img src="flower.jpg" alt="Petal tips" onerror="this.src='https://placehold.co/400x380/e8f5e9/5c9c6c?text=Petal+Tips'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Curled Petal Tips</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Macro</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="cultivar" data-src="flower1.jpg" data-caption="Flore Pleno — the double-flowered cultivar with rosette-like bells" data-title="Flore Pleno">
+        <img src="flower1.jpg" alt="Flore Pleno" onerror="this.src='https://placehold.co/400x310/e8f5e9/5c9c6c?text=Flore+Pleno'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Flore Pleno</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Cultivar</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="garden" data-src="fortins.jpg" data-caption="Container growing — a deep pot of muguet on a shaded terrace" data-title="Container Garden">
+        <img src="fortins.jpg" alt="Container garden" onerror="this.src='https://placehold.co/400x440/e8f5e9/5c9c6c?text=Container+Garden'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Container Garden</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Garden</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="classic" data-src="flower1.jpg" data-caption="Bridal bouquet inspiration — Lily of the Valley featured in royal weddings" data-title="Bridal Bouquet">
+        <img src="flower1.jpg" alt="Bridal bouquet" onerror="this.src='https://placehold.co/400x360/e8f5e9/5c9c6c?text=Bridal+Bouquet'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Bridal Bouquet</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Classic White</div>
+        </div>
+      </div>
+
+      <div class="gallery-item" data-cat="macro" data-src="fortins.jpg" data-caption="Six stamens visible inside the bell — photographed with a macro lens" data-title="Stamens Macro">
+        <img src="fortins.jpg" alt="Stamens macro" onerror="this.src='https://placehold.co/400x350/e8f5e9/5c9c6c?text=Stamens+Macro'">
+        <div class="gallery-overlay">
+          <i class="fas fa-search-plus ov-icon"></i>
+          <div class="ov-title">Stamens Macro</div>
+          <div class="ov-tag"><i class="fas fa-tag"></i> Macro</div>
+        </div>
+      </div>
+
+    </div><!-- /.gallery-grid -->
+
+    <!-- Empty state message -->
+    <div id="emptyState" style="display:none;text-align:center;padding:3rem;color:#5c9c6c;">
+      <i class="fas fa-images" style="font-size:3rem;opacity:.5;display:block;margin-bottom:1rem;"></i>
+      <p>No photos in this category yet.</p>
+    </div>
+
+    <!-- PHOTOGRAPHY TIPS SECTION -->
+    <div class="card" style="margin-top:1.5rem;">
+      <h2><i class="fas fa-camera"></i> Photography Tips</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:.8rem;">
+        <div style="background:#f5f9f5;border-radius:8px;padding:1rem;">
+          <strong style="color:#5c9c6c;"><i class="fas fa-cloud"></i> Light</strong>
+          <p style="font-size:.88rem;color:#555;margin-top:.3rem;">Overcast mornings — no harsh shadows, soft even light</p>
+        </div>
+        <div style="background:#f5f9f5;border-radius:8px;padding:1rem;">
+          <strong style="color:#5c9c6c;"><i class="fas fa-camera-retro"></i> Lens</strong>
+          <p style="font-size:.88rem;color:#555;margin-top:.3rem;">100mm macro lens reveals bell detail invisible to the eye</p>
+        </div>
+        <div style="background:#f5f9f5;border-radius:8px;padding:1rem;">
+          <strong style="color:#5c9c6c;"><i class="fas fa-circle-half-stroke"></i> Aperture</strong>
+          <p style="font-size:.88rem;color:#555;margin-top:.3rem;">f/8–f/11 for sharp flowers with creamy background blur</p>
+        </div>
+        <div style="background:#f5f9f5;border-radius:8px;padding:1rem;">
+          <strong style="color:#5c9c6c;"><i class="fas fa-moon"></i> Background</strong>
+          <p style="font-size:.88rem;color:#555;margin-top:.3rem;">Dark soil or bark behind the flowers makes white bells pop</p>
+        </div>
+      </div>
+      <a href="recipes-uses.html" class="btn" style="margin-top:1rem;"><i class="fas fa-leaf"></i> More Creative Uses</a>
+    </div>
+
+  </div><!-- /.gallery-wrap -->
+
+  <!-- FOOTER: Copyright and educational credit -->
+  <footer>
+    <p class="footer-brand">🌿 Flower of the Valleys Student Blog © 2026</p>
+    <p>Created for educational purposes by <strong>Mark Gabriel Susim</strong></p>
+    <div class="footer-links">
+      <a href="Project.html"><i class="fas fa-home"></i> Home</a>
+      <a href="gallery.html"><i class="fas fa-images"></i> Gallery</a>
+      <a href="posts.html"><i class="fas fa-newspaper"></i> Posts</a>
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+    </div>
+    <p class="footer-credit">All images used for educational purposes.</p>
+  </footer>
+
+  <!-- CUSTOM SCRIPTS: All interactivity is handled in scripts.js -->
+  <script src="scripts.js"></script>
+</body>
+</html>

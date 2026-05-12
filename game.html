@@ -1,0 +1,1298 @@
+<!-- 
+  =============================================================================
+  PROJECT: Flower of the Valleys — Student Blog
+  PAGE: Lily Bloom Garden (game.html)
+  AUTHOR: Mark Gabriel Susim
+  VERSION: 1.2
+  DESCRIPTION: A custom-built mini-game using Canvas API where players catch 
+               blooms while avoiding toxic berries.
+  =============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Game — Flower of the Valleys</title>
+  
+  <!-- SEO & Social Media Meta Tags -->
+  <meta name="description" content="Catch the flowers, collect leaves, and dodge the toxic berries in our Lily Bloom Garden mini game! High-speed fun for all ages.">
+  <meta property="og:title" content="Lily Bloom Garden Mini Game — Flower of the Valleys">
+  <meta property="og:description" content="Test your reflexes in this Lily of the Valley themed game.">
+  <meta property="og:image" content="flower.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Specific Game Styles -->
+  <style>
+    /* ─── RESET & BASE ─── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --green-dark: #1b5e20;
+      --green-mid: #2e7d32;
+      --green-main: #5c9c6c;
+      --green-light: #7ab956;
+      --green-pale: #e8f5e9;
+      --green-bg: #f5f9f5;
+      --border-green: #d0ddc5;
+      --text-dark: #333;
+      --text-mid: #555;
+      --white: #fff;
+      --shadow: 0 4px 16px rgba(27, 94, 32, .10);
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--green-bg);
+      color: var(--text-dark);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1.2rem;
+      border-bottom: 2px solid var(--green-light);
+      margin-bottom: 0;
+      background: var(--white);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--green-main);
+      font-size: 2.4rem;
+      margin-bottom: .3rem;
+      letter-spacing: .5px;
+    }
+
+    header p.subtitle {
+      color: #666;
+      font-style: italic;
+      font-size: 1rem;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      background: #f5f5f5;
+      padding: .9rem 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-green);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: 2px solid var(--green-main);
+      color: var(--green-main);
+      font-size: 1.3rem;
+      padding: .45rem .9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .nav-toggle:hover {
+      background: var(--green-pale);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .nav-links a {
+      color: var(--green-main);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: .3rem .5rem;
+      border-radius: 4px;
+      transition: color .2s, background .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--green-light);
+    }
+
+    .nav-links a.active {
+      background: var(--green-main);
+      color: var(--white);
+      border-radius: 20px;
+      padding: .3rem .9rem;
+    }
+
+    @media(max-width:768px) {
+      .nav-toggle {
+        display: block;
+        align-self: flex-start;
+        margin-bottom: .3rem;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: .8rem;
+        width: 100%;
+        padding: .5rem 0;
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+    }
+
+    /* ─── PAGE TITLE BAND ─── */
+    .page-title-band {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-main) 100%);
+      color: var(--white);
+      text-align: center;
+      padding: 2rem 1rem 1.6rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .page-title-band h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--white);
+      margin-bottom: .4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+    }
+
+    .page-title-band p {
+      color: rgba(255, 255, 255, .85);
+      font-style: italic;
+      font-size: 1rem;
+    }
+
+    /* ─── LAYOUT ─── */
+    .main-content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 1rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      border-left: 4px solid var(--green-light);
+      padding: 1.4rem 1.6rem;
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--green-main);
+      font-size: 1.15rem;
+      margin-bottom: .7rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .card p {
+      color: var(--text-mid);
+      font-size: .94rem;
+    }
+
+    /* ─── TAGS ─── */
+    .tag {
+      display: inline-block;
+      background: var(--green-pale);
+      color: var(--green-dark);
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-size: .78rem;
+      font-weight: 700;
+      margin: 0 4px 6px 0;
+    }
+
+    /* ─── BUTTON ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--green-main);
+      color: var(--white);
+      border: none;
+      padding: .65rem 1.4rem;
+      border-radius: 6px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+      margin-top: .8rem;
+    }
+
+    .btn:hover {
+      background: var(--green-light);
+      transform: translateY(-1px);
+    }
+
+    /* ─── GAME HUD ─── */
+    .game-hud {
+      display: flex;
+      gap: .8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: .8rem;
+      width: 100%;
+    }
+
+    .hud-box {
+      background: var(--white);
+      border-left: 4px solid var(--green-light);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: .55rem 1rem;
+      text-align: center;
+      min-width: 82px;
+      flex: 1;
+    }
+
+    .hud-label {
+      font-size: .68rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: .1rem;
+    }
+
+    .hud-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      color: var(--green-main);
+      font-weight: 700;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    /* ─── CANVAS ─── */
+    .canvas-wrap {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 1.2rem;
+    }
+
+    canvas {
+      border-left: 4px solid var(--green-light);
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(27, 94, 32, .16);
+      display: block;
+      max-width: 100%;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    /* ─── DIFFICULTY ─── */
+    .diff-btns {
+      display: flex;
+      gap: .6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: .5rem;
+    }
+
+    .diff-btn {
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      border: 2px solid var(--green-light);
+      background: var(--white);
+      color: var(--green-main);
+      padding: .48rem 1.1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: .85rem;
+      transition: all .2s;
+    }
+
+    .diff-btn:hover,
+    .diff-btn.sel {
+      background: var(--green-light);
+      color: var(--white);
+      border-color: var(--green-light);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--green-dark);
+      color: var(--white);
+      text-align: center;
+      padding: 2rem 1.5rem;
+      margin-top: 2rem;
+    }
+
+    footer p {
+      margin: .4rem 0;
+      font-size: .93rem;
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: .8rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--white);
+      background: var(--green-mid);
+      text-decoration: none;
+      padding: .5rem 1.1rem;
+      border-radius: 5px;
+      font-size: .88rem;
+      font-weight: 700;
+      transition: background .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .footer-links a:hover {
+      background: var(--green-light);
+    }
+
+    /* ─── FLASH OVERLAY ─── */
+    #flashOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(198, 40, 40, .18);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .05s;
+      z-index: 200;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="flashOverlay"></div>
+
+  <!-- MAIN HEADER: Branding and site title -->
+  <header>
+    <h1>🌿 Flower of the Valleys</h1>
+    <p class="subtitle">A Student Blog About the Beautiful Lily of the Valley</p>
+  </header>
+
+  <!-- NAVIGATION: Sticky nav with mobile burger menu -->
+  <nav>
+    <div class="nav-inner">
+      <button class="nav-toggle" aria-label="Toggle navigation"><i class="fas fa-bars"></i></button>
+      <ul class="nav-links">
+        <li><a href="Project.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        <li><a href="posts.html"><i class="fas fa-newspaper"></i> Blog Posts</a></li>
+        <li><a href="gallery.html"><i class="fas fa-images"></i> Gallery</a></li>
+        <li><a href="varieties.html"><i class="fas fa-spa"></i> Varieties</a></li>
+        <li><a href="care-guide.html"><i class="fas fa-seedling"></i> Care Guide</a></li>
+        <li><a href="symbolism.html"><i class="fas fa-globe"></i> Symbolism</a></li>
+        <li><a href="science.html"><i class="fas fa-flask"></i> Science</a></li>
+        <li><a href="recipes-uses.html"><i class="fas fa-leaf"></i> Creative Uses</a></li>
+        <li><a href="game.html" class="active"><i class="fas fa-gamepad"></i> Mini Game</a></li>
+        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER: Banner for the current page -->
+
+  <div class="page-title-band">
+    <h2><i class="fas fa-gamepad"></i> Lily Bloom Garden</h2>
+    <p>Catch the flowers · Collect leaves · Dodge the toxic berries!</p>
+  </div>
+
+  <div class="main-content">
+
+    <!-- Difficulty -->
+    <div class="card" style="margin-bottom:.9rem;">
+      <h2><i class="fas fa-sliders-h"></i> Difficulty</h2>
+      <div class="diff-btns">
+        <button class="diff-btn" data-d="easy">🌱 Easy (5 lives)</button>
+        <button class="diff-btn sel" data-d="normal">🌸 Normal (3 lives)</button>
+        <button class="diff-btn" data-d="hard">🌿 Hard (2 lives)</button>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div class="game-hud">
+      <div class="hud-box">
+        <div class="hud-label">Score</div>
+        <div class="hud-val" id="scoreDisp">0</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Lives</div>
+        <div class="hud-val" id="livesDisp">❤️❤️❤️</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Level</div>
+        <div class="hud-val" id="speedDisp">1</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Best</div>
+        <div class="hud-val" id="bestDisp">0</div>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <canvas id="gc" width="480" height="520"></canvas>
+    </div>
+
+    <!-- Legend -->
+    <div class="card" style="margin-bottom:1.2rem;">
+      <h2><i class="fas fa-circle-info"></i> How to Play</h2>
+      <div style="display:flex;gap:1.2rem;flex-wrap:wrap;font-size:.88rem;color:var(--text-mid);margin-top:.3rem;">
+        <span>🌸 Flower = <strong>+1 pt</strong></span>
+        <span>🍃 Leaf = <strong>+3 pts</strong></span>
+        <span>🔴 Berry = <strong>-1 life</strong></span>
+        <span>💨 Miss flower = <strong>-1 life</strong></span>
+      </div>
+      <div style="margin-top:.6rem;font-size:.85rem;color:#888;">
+        <i class="fas fa-keyboard"></i> Arrow keys &nbsp;|&nbsp; <i class="fas fa-hand-pointer"></i> Touch/drag on
+        mobile &nbsp;|&nbsp; Speed increases every 10 points!
+      </div>
+    </div>
+
+    <!-- About card -->
+    <div class="card">
+      <h2><i class="fas fa-gamepad"></i> About This Game</h2>
+      <p>Lily Bloom Garden is a mini game created as part of the Flower of the Valleys student blog. Catch falling Lily
+        of the Valley blooms to score points, collect bonus leaves for extra points, and dodge the toxic red berries.
+        The game gets faster every 10 points — how high can you score?</p>
+      <div style="margin:.8rem 0 .4rem;">
+        <span class="tag"><i class="fas fa-gamepad"></i> Mini Game</span>
+        <span class="tag"><i class="fas fa-spa"></i> Lily of the Valley</span>
+        <span class="tag"><i class="fas fa-seedling"></i> Educational</span>
+        <span class="tag"><i class="fas fa-star"></i> High Score</span>
+      </div>
+      <a href="about.html" class="btn"><i class="fas fa-info-circle"></i> Read More About Lily of the Valley</a>
+    </div>
+
+  </div><!-- /.main-content -->
+
+  <footer>
+    <p class="footer-brand">🌿 Flower of the Valleys Student Blog © 2026</p>
+    <p>Created for educational purposes by <strong>Mark Gabriel Susim</strong></p>
+    <div class="footer-links">
+      <a href="Project.html"><i class="fas fa-home"></i> Home</a>
+      <a href="gallery.html"><i class="fas fa-images"></i> Gallery</a>
+      <a href="posts.html"><i class="fas fa-newspaper"></i> Posts</a>
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+    </div>
+    <p style="margin-top:1rem;font-size:.82rem;opacity:.75;">All content is for educational purposes.</p>
+  </footer>
+
+  <!-- CUSTOM SCRIPTS: All site-wide interactivity is handled in scripts.js -->
+  <script src="scripts.js"></script>
+
+  <!-- GAME LOGIC: The core mechanics of the Lily Bloom Garden game -->
+  <script>
+
+    /* ════════════════════════════════════════
+       AUDIO (Web Audio API — no files)
+    ════════════════════════════════════════ */
+    let AC = null;
+    function getAC() {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      return AC;
+    }
+    function beep(freq, dur, type = 'sine', vol = 0.15) {
+      try {
+        const ac = getAC();
+        const o = ac.createOscillator();
+        const g = ac.createGain();
+        o.connect(g); g.connect(ac.destination);
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, ac.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+        o.start(); o.stop(ac.currentTime + dur);
+      } catch (e) { }
+    }
+    function sndCatch() { beep(880, 0.10, 'sine', 0.14); setTimeout(() => beep(1100, 0.08, 'sine', 0.10), 70); }
+    function sndLeaf() { beep(660, 0.12, 'sine', 0.14); setTimeout(() => beep(880, 0.10, 'sine', 0.10), 70); setTimeout(() => beep(1100, 0.08, 'sine', 0.08), 140); }
+    function sndBerry() { beep(160, 0.28, 'sawtooth', 0.18); }
+    function sndMiss() { beep(220, 0.20, 'triangle', 0.12); }
+    function sndLevel() { [600, 800, 1000, 1200].forEach((f, i) => setTimeout(() => beep(f, 0.10, 'sine', 0.12), i * 90)); }
+    function sndGameOver() { [400, 350, 300, 250].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'triangle', 0.14), i * 110)); }
+
+    /* ════════════════════════════════════════
+       DIFFICULTY CONFIG
+    ════════════════════════════════════════ */
+    const DIFFS = {
+      easy: { lives: 5, baseSpeed: 1.4, spawnRate: 0.018, berryChance: 0.12, leafChance: 0.18, bonusWave: true, missLoss: true },
+      normal: { lives: 3, baseSpeed: 2.0, spawnRate: 0.025, berryChance: 0.22, leafChance: 0.15, bonusWave: true, missLoss: true },
+      hard: { lives: 2, baseSpeed: 3.0, spawnRate: 0.035, berryChance: 0.38, leafChance: 0.10, bonusWave: false, missLoss: true }
+    };
+    let chosenDiff = 'normal';
+
+    document.querySelectorAll('.diff-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        if (gameState === 'playing') return; // can't change mid-game
+        document.querySelectorAll('.diff-btn').forEach(x => x.classList.remove('sel'));
+        b.classList.add('sel');
+        chosenDiff = b.dataset.d;
+        resetGame();
+      });
+    });
+
+    /* ════════════════════════════════════════
+       FUN FACTS
+    ════════════════════════════════════════ */
+    const FACTS = [
+      "Lily of the Valley is the national flower of Finland! 🇫🇮",
+      "60 million stems are sold in France on May 1st every year! 🌸",
+      "All parts of this plant are toxic — even the vase water! ⚠️",
+      "Queen Elizabeth II had Lily of the Valley in her coronation bouquet (1953)! 👑",
+      "The fragrance can't be extracted — all muguet perfumes use synthetic scent! 🌿",
+      "It was used medicinally since the 16th century for heart conditions! 💊",
+      "In Victorian times, gifting it meant: 'You have made my life complete' 💚",
+      "It's called suzuran (鈴蘭) in Japanese, meaning 'small bell orchid' 🎋",
+      "Princess Grace of Monaco carried it in her wedding bouquet in 1956! 💐",
+      "Kate Middleton's royal wedding bouquet in 2011 also featured it! 👸"
+    ];
+
+    /* ════════════════════════════════════════
+       CANVAS SETUP
+    ════════════════════════════════════════ */
+    const canvas = document.getElementById('gc');
+    const ctx = canvas.getContext('2d');
+    const CW = 480, CH = 520;
+
+    function scaleCanvas() {
+      const maxW = Math.min(CW, window.innerWidth - 32);
+      const scale = maxW / CW;
+      canvas.style.width = (CW * scale) + 'px';
+      canvas.style.height = (CH * scale) + 'px';
+    }
+    scaleCanvas();
+    window.addEventListener('resize', scaleCanvas);
+
+    /* ════════════════════════════════════════
+       GAME STATE
+    ════════════════════════════════════════ */
+    let gameState = 'start'; // 'start' | 'playing' | 'over'
+    let score, lives, speed, lvl;
+    let items, particles, floats;
+    let frame, bonusTimer, bonusWaving, bonusCount;
+    let currentFact;
+    let flashTimer = 0;
+    let bestScore = parseInt(localStorage.getItem('lilyBest') || '0');
+
+    const basket = { x: 200, w: 70, h: 22 };
+    const keys = {};
+
+    /* ─── Background sparkles (always visible) ─── */
+    const sparks = Array.from({ length: 30 }, () => ({
+      x: Math.random() * CW,
+      y: Math.random() * CH,
+      r: Math.random() * 1.6 + 0.4,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.12 + Math.random() * 0.10
+    }));
+
+    /* ─── Demo flowers on start screen ─── */
+    const demoFlowers = Array.from({ length: 7 }, (_, i) => ({
+      x: 30 + i * 68,
+      y: -30 - i * 55,
+      baseX: 30 + i * 68,
+      sway: i * 0.9,
+      speed: 0.8 + i * 0.12
+    }));
+
+    /* ════════════════════════════════════════
+       RESET
+    ════════════════════════════════════════ */
+    function resetGame() {
+      const d = DIFFS[chosenDiff];
+      score = 0; lives = d.lives; speed = d.baseSpeed; lvl = 1;
+      items = []; particles = []; floats = [];
+      frame = 0; bonusTimer = 0; bonusWaving = false; bonusCount = 0;
+      basket.x = CW / 2 - basket.w / 2;
+      flashTimer = 0;
+      updateHUD();
+    }
+
+    function updateHUD() {
+      document.getElementById('scoreDisp').textContent = score;
+      document.getElementById('livesDisp').textContent = '❤️'.repeat(Math.max(0, lives));
+      document.getElementById('speedDisp').textContent = lvl;
+      document.getElementById('bestDisp').textContent = bestScore;
+    }
+
+    /* ════════════════════════════════════════
+       SPAWN
+    ════════════════════════════════════════ */
+    function spawnItem(type, forced) {
+      const x = 22 + Math.random() * (CW - 44);
+      const isFlower = type === 'flower';
+      items.push({
+        x, y: -20,
+        type,
+        baseX: x,
+        sway: Math.random() * Math.PI * 2,
+        swayAmp: isFlower ? 16 : 0,
+        speed: (forced ? speed + 0.8 : speed) + (Math.random() - 0.5) * 0.5,
+        w: type === 'berry' ? 9 : 15
+      });
+    }
+
+    /* ════════════════════════════════════════
+       DRAW HELPERS
+    ════════════════════════════════════════ */
+    function drawBG() {
+      const grad = ctx.createLinearGradient(0, 0, 0, CH);
+      grad.addColorStop(0, '#dcedc8');
+      grad.addColorStop(1, '#f5f9f5');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CW, CH);
+
+      // animated sparkle dots
+      sparks.forEach(s => {
+        s.y -= s.speed;
+        s.phase += 0.04;
+        if (s.y < -4) { s.y = CH + 4; s.x = Math.random() * CW; }
+        const alpha = 0.25 + 0.25 * Math.sin(s.phase);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#7ab956';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    /* ── Lily of the Valley flower bell ── */
+    function drawFlower(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // stem
+      ctx.strokeStyle = '#4a8c5c';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, 11);
+      ctx.stroke();
+
+      // two small side leaves
+      ctx.fillStyle = '#7ab956';
+      // left leaf
+      ctx.beginPath();
+      ctx.save(); ctx.translate(-5, 6); ctx.rotate(-0.5);
+      ctx.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.restore();
+      // right leaf
+      ctx.beginPath();
+      ctx.save(); ctx.translate(5, 6); ctx.rotate(0.5);
+      ctx.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.restore();
+
+      // bell body
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#5c9c6c';
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.arc(0, -2, 9, Math.PI, 0, false);           // top arch
+      ctx.bezierCurveTo(9, -2, 7, 10, 0, 10);          // right curve down
+      ctx.bezierCurveTo(-7, 10, -9, -2, 0, -2);         // left curve up
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // inner shine
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.beginPath();
+      ctx.ellipse(-2, 0, 2.5, 4, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // tiny petal tips at bottom
+      ctx.strokeStyle = 'rgba(92,156,108,0.5)';
+      ctx.lineWidth = 0.8;
+      for (let i = -2; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * 2, 9);
+        ctx.lineTo(i * 2, 12);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    /* ── Leaf ── */
+    function drawLeaf(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      // glow
+      ctx.shadowColor = '#7ab956';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = '#7ab956';
+      ctx.strokeStyle = '#1b5e20';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 8, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      // vein
+      ctx.beginPath();
+      ctx.moveTo(0, -14); ctx.lineTo(0, 14);
+      ctx.strokeStyle = 'rgba(27,94,32,0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      // side veins
+      [-7, -3, 3, 7].forEach(yv => {
+        ctx.beginPath();
+        ctx.moveTo(0, yv);
+        ctx.lineTo(yv < 0 ? -5 : 5, yv + (yv < 0 ? -3 : 3));
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    /* ── Toxic berry ── */
+    function drawBerry(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      // shadow
+      ctx.shadowColor = '#c62828';
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#e53935';
+      ctx.beginPath();
+      ctx.arc(0, 0, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // shine
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.beginPath();
+      ctx.ellipse(-2.5, -2.5, 2.5, 2, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+      // stem nub
+      ctx.fillStyle = '#4a0000';
+      ctx.beginPath();
+      ctx.arc(0, -8, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      // skull warning dots
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath(); ctx.arc(-2, 1, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2, 1, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    /* ── Basket ── */
+    function drawBasket() {
+      const bx = basket.x, by = CH - basket.h - 10, bw = basket.w, bh = basket.h;
+
+      // shadow
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.25)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+
+      // body
+      ctx.fillStyle = '#8d6e63';
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 6);
+      ctx.fill();
+      ctx.restore();
+
+      // woven pattern
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 6);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= bw; i += 7) {
+        ctx.beginPath(); ctx.moveTo(bx + i, by); ctx.lineTo(bx + i, by + bh); ctx.stroke();
+      }
+      for (let j = 0; j <= bh; j += 5) {
+        ctx.beginPath(); ctx.moveTo(bx, by + j); ctx.lineTo(bx + bw, by + j); ctx.stroke();
+      }
+      ctx.restore();
+
+      // rim highlight
+      ctx.strokeStyle = '#a1887f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 6);
+      ctx.stroke();
+
+      // handles
+      ctx.strokeStyle = '#6d4c41';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(bx + 10, by, 9, Math.PI, 0, false); ctx.stroke();
+      ctx.beginPath(); ctx.arc(bx + bw - 10, by, 9, Math.PI, 0, false); ctx.stroke();
+    }
+
+    /* ── Particles ── */
+    function tickParticles() {
+      particles = particles.filter(p => p.life > 0);
+      particles.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = p.life / p.maxLife;
+        ctx.fillStyle = p.col;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.06; // gentle gravity
+        p.life--;
+      });
+    }
+    function addParticles(x, y, col, n = 10) {
+      for (let i = 0; i < n; i++) {
+        particles.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: -Math.random() * 4 - 1,
+          r: Math.random() * 3 + 1,
+          col,
+          life: 30, maxLife: 30
+        });
+      }
+    }
+
+    /* ── Floating text ── */
+    function tickFloats() {
+      floats = floats.filter(f => f.life > 0);
+      floats.forEach(f => {
+        ctx.save();
+        ctx.globalAlpha = f.life / f.maxLife;
+        ctx.fillStyle = f.col;
+        ctx.font = 'bold 14px Lato, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.2)';
+        ctx.shadowBlur = 3;
+        ctx.fillText(f.txt, f.x, f.y);
+        ctx.restore();
+        f.y -= 1.4;
+        f.life--;
+      });
+    }
+    function addFloat(x, y, txt, col) {
+      floats.push({ x, y, txt, col, life: 55, maxLife: 55 });
+    }
+
+    /* ════════════════════════════════════════
+       SCREEN: START
+    ════════════════════════════════════════ */
+    function drawStart() {
+      drawBG();
+
+      // demo flowers falling
+      demoFlowers.forEach(f => {
+        f.y += f.speed;
+        f.x = f.baseX + Math.sin(frame * 0.03 + f.sway) * 14;
+        if (f.y > CH + 30) f.y = -30;
+        drawFlower(f.x, f.y);
+      });
+
+      // panel
+      ctx.fillStyle = 'rgba(255,255,255,0.88)';
+      ctx.shadowColor = 'rgba(27,94,32,0.15)';
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.roundRect(50, 100, 380, 290, 18);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // border
+      ctx.strokeStyle = '#7ab956';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(50, 100, 380, 290, 18);
+      ctx.stroke();
+
+      // title
+      ctx.fillStyle = '#5c9c6c';
+      ctx.font = 'bold 34px "Playfair Display", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Lily Bloom Garden', CW / 2, 163);
+
+      // subtitle
+      ctx.fillStyle = '#7ab956';
+      ctx.font = '14px Lato, sans-serif';
+      ctx.fillText('Catch the flowers · Dodge the berries!', CW / 2, 190);
+
+      // item key
+      const items_key = [
+        { draw: drawFlower, label: '+1 pt', col: '#5c9c6c' },
+        { draw: drawLeaf, label: '+3 pts', col: '#2e7d32' },
+        { draw: drawBerry, label: 'lose life', col: '#c62828' }
+      ];
+      items_key.forEach((k, i) => {
+        const ix = 110 + i * 95;
+        k.draw(ix, 228);
+        ctx.fillStyle = k.col;
+        ctx.font = 'bold 11px Lato, sans-serif';
+        ctx.fillText(k.label, ix, 252);
+      });
+
+      // controls
+      ctx.fillStyle = '#888';
+      ctx.font = '12px Lato, sans-serif';
+      ctx.fillText('← → Arrow keys to move  |  Touch/drag on mobile', CW / 2, 275);
+
+      // blinking play button
+      const pulse = 0.7 + 0.3 * Math.sin(frame * 0.09);
+      ctx.save();
+      ctx.globalAlpha = pulse;
+      const btnGrad = ctx.createLinearGradient(CW / 2 - 72, 0, CW / 2 + 72, 0);
+      btnGrad.addColorStop(0, '#5c9c6c');
+      btnGrad.addColorStop(1, '#7ab956');
+      ctx.fillStyle = btnGrad;
+      ctx.shadowColor = '#5c9c6c';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.roundRect(CW / 2 - 72, 295, 144, 44, 22);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 16px Lato, sans-serif';
+      ctx.fillText('▶  Play', CW / 2, 323);
+
+      ctx.fillStyle = '#aaa';
+      ctx.font = '11px Lato, sans-serif';
+      ctx.fillText('Press Space / Enter or click to start', CW / 2, 368);
+    }
+
+    /* ════════════════════════════════════════
+       SCREEN: GAME OVER
+    ════════════════════════════════════════ */
+    function drawOver() {
+      drawBG();
+
+      // dim overlay
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.fillRect(0, 0, CW, CH);
+
+      // wilted flower decoration
+      ctx.save();
+      ctx.globalAlpha = 0.15;
+      for (let i = 0; i < 5; i++) {
+        drawFlower(60 + i * 90, 80 + (i % 2) * 20);
+      }
+      ctx.restore();
+
+      // "Game Over"
+      ctx.fillStyle = '#5c9c6c';
+      ctx.font = 'bold 42px "Playfair Display", serif';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(27,94,32,0.2)';
+      ctx.shadowBlur = 8;
+      ctx.fillText('Game Over', CW / 2, 95);
+      ctx.shadowBlur = 0;
+
+      // score
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 26px Lato, sans-serif';
+      ctx.fillText('Score: ' + score, CW / 2, 138);
+
+      // best
+      const isNewBest = score >= bestScore && score > 0;
+      ctx.fillStyle = isNewBest ? '#7ab956' : '#888';
+      ctx.font = isNewBest ? 'bold 15px Lato, sans-serif' : '14px Lato, sans-serif';
+      ctx.fillText(isNewBest ? '🏆 New Best: ' + bestScore + '!' : 'Best: ' + bestScore, CW / 2, 164);
+
+      // fact box
+      ctx.fillStyle = '#e8f5e9';
+      ctx.strokeStyle = '#7ab956';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(28, 182, 424, 108, 12); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1b5e20';
+      ctx.font = 'bold 11px Lato, sans-serif';
+      ctx.fillText('🌿 Did you know?', CW / 2, 204);
+
+      // wrap fact text
+      ctx.fillStyle = '#333';
+      ctx.font = '13px Lato, sans-serif';
+      const words = currentFact.split(' ');
+      const lines = []; let cur = '';
+      words.forEach(w => {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width > 380) { lines.push(cur); cur = w; }
+        else cur = test;
+      });
+      if (cur) lines.push(cur);
+      lines.slice(0, 4).forEach((l, i) => ctx.fillText(l, CW / 2, 226 + i * 18));
+
+      // buttons
+      // Play Again
+      const btnGrad = ctx.createLinearGradient(CW / 2 - 148, 0, CW / 2 - 12, 0);
+      btnGrad.addColorStop(0, '#5c9c6c'); btnGrad.addColorStop(1, '#7ab956');
+      ctx.fillStyle = btnGrad;
+      ctx.shadowColor = '#5c9c6c'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.roundRect(CW / 2 - 148, 308, 132, 42, 21); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13px Lato, sans-serif';
+      ctx.fillText('▶ Play Again', CW / 2 - 82, 334);
+
+      // Learn More
+      ctx.fillStyle = '#e8f5e9';
+      ctx.strokeStyle = '#7ab956'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(CW / 2 + 16, 308, 132, 42, 21); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#5c9c6c';
+      ctx.font = 'bold 13px Lato, sans-serif';
+      ctx.fillText('📖 Learn More', CW / 2 + 82, 334);
+
+      // hint
+      ctx.fillStyle = '#aaa';
+      ctx.font = '11px Lato, sans-serif';
+      ctx.fillText('Press Space / Enter to play again', CW / 2, 375);
+    }
+
+    /* ════════════════════════════════════════
+       MAIN GAME LOOP
+    ════════════════════════════════════════ */
+    function gameLoop() {
+      requestAnimationFrame(gameLoop);
+      frame++;
+
+      if (gameState === 'start') { drawStart(); return; }
+      if (gameState === 'over') { drawOver(); return; }
+
+      drawBG();
+
+      /* ── Move basket ── */
+      if (keys['ArrowLeft']) basket.x = Math.max(0, basket.x - 6);
+      if (keys['ArrowRight']) basket.x = Math.min(CW - basket.w, basket.x + 6);
+
+      /* ── Spawn items ── */
+      const d = DIFFS[chosenDiff];
+      if (!bonusWaving && Math.random() < d.spawnRate) {
+        const r = Math.random();
+        if (r < d.berryChance) spawnItem('berry');
+        else if (r < d.berryChance + d.leafChance) spawnItem('leaf');
+        else spawnItem('flower');
+      }
+
+      // bonus wave every 15 s (900 frames at 60fps)
+      if (d.bonusWave) {
+        bonusTimer++;
+        if (bonusTimer > 900 && !bonusWaving) { bonusWaving = true; bonusCount = 0; }
+        if (bonusWaving && frame % 10 === 0) {
+          spawnItem('leaf', true);
+          bonusCount++;
+          if (bonusCount >= 5) { bonusWaving = false; bonusTimer = 0; }
+        }
+      }
+
+      /* ── Update & draw items ── */
+      const bTop = CH - basket.h - 10;
+      const bBot = CH - 10;
+
+      items = items.filter(it => {
+        it.y += it.speed;
+        if (it.swayAmp) it.x = it.baseX + Math.sin(frame * 0.04 + it.sway) * it.swayAmp;
+
+        // catch detection
+        const caught = it.y > bTop - 8 && it.y < bBot + 4
+          && it.x > basket.x - 10 && it.x < basket.x + basket.w + 10;
+
+        if (caught) {
+          if (it.type === 'flower') {
+            score++;
+            addParticles(it.x, it.y, '#ffffff', 8);
+            addParticles(it.x, it.y, '#7ab956', 5);
+            addFloat(it.x, bTop - 22, '+1 🌸', '#5c9c6c');
+            sndCatch();
+          } else if (it.type === 'leaf') {
+            score += 3;
+            addParticles(it.x, it.y, '#7ab956', 14);
+            addParticles(it.x, it.y, '#dcedc8', 6);
+            addFloat(it.x, bTop - 22, '+3 🍃', '#2e7d32');
+            sndLeaf();
+          } else { // berry
+            lives--;
+            addFloat(it.x, bTop - 22, '-1 ❤️', '#c62828');
+            sndBerry();
+            triggerFlash();
+          }
+          updateHUD();
+          return false;
+        }
+
+        // fell off bottom
+        if (it.y > CH + 25) {
+          if (it.type === 'flower' && d.missLoss) {
+            lives--;
+            addFloat(it.x, CH - 55, 'Miss! 💨', '#c62828');
+            sndMiss();
+            updateHUD();
+          }
+          return false;
+        }
+
+        // draw
+        if (it.type === 'flower') drawFlower(it.x, it.y);
+        else if (it.type === 'leaf') drawLeaf(it.x, it.y);
+        else drawBerry(it.x, it.y);
+        return true;
+      });
+
+      /* ── Basket, particles, floats ── */
+      drawBasket();
+      tickParticles();
+      tickFloats();
+
+      /* ── Flash overlay handling ── */
+      if (flashTimer > 0) {
+        ctx.fillStyle = `rgba(198,40,40,${0.22 * (flashTimer / 8)})`;
+        ctx.fillRect(0, 0, CW, CH);
+        flashTimer--;
+      }
+
+      /* ── Level up ── */
+      const newLvl = 1 + Math.floor(score / 10);
+      if (newLvl > lvl) {
+        lvl = newLvl;
+        speed = DIFFS[chosenDiff].baseSpeed + (lvl - 1) * 0.3;
+        items.forEach(it => it.speed += 0.3);
+        sndLevel();
+        addFloat(CW / 2, CH / 2 - 40, '⬆ Level ' + lvl + '!', '#5c9c6c');
+        updateHUD();
+      }
+
+      /* ── Game over check ── */
+      if (lives <= 0) {
+        gameState = 'over';
+        if (score > bestScore) {
+          bestScore = score;
+          localStorage.setItem('lilyBest', bestScore);
+        }
+        currentFact = FACTS[Math.floor(Math.random() * FACTS.length)];
+        sndGameOver();
+        updateHUD();
+      }
+    }
+
+    /* ─── Flash helper ─── */
+    function triggerFlash() { flashTimer = 8; }
+
+    /* ════════════════════════════════════════
+       INPUT — KEYBOARD
+    ════════════════════════════════════════ */
+    document.addEventListener('keydown', e => {
+      keys[e.key] = true;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.preventDefault();
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        getAC(); // unlock audio on first interaction
+        if (gameState === 'start' || gameState === 'over') {
+          resetGame(); gameState = 'playing';
+        }
+      }
+    });
+    document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+    /* ════════════════════════════════════════
+       INPUT — TOUCH (mobile)
+    ════════════════════════════════════════ */
+    let touchStartX = null;
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      touchStartX = e.touches[0].clientX;
+      getAC();
+      if (gameState !== 'playing') { resetGame(); gameState = 'playing'; }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (touchStartX === null) return;
+      const dx = e.touches[0].clientX - touchStartX;
+      basket.x = Math.max(0, Math.min(CW - basket.w, basket.x + dx * 1.6));
+      touchStartX = e.touches[0].clientX;
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => { touchStartX = null; });
+
+    /* ════════════════════════════════════════
+       INPUT — CLICK (start / game over buttons)
+    ════════════════════════════════════════ */
+    canvas.addEventListener('click', e => {
+      getAC();
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = CW / rect.width;
+      const scaleY = CH / rect.height;
+      const cx2 = (e.clientX - rect.left) * scaleX;
+      const cy2 = (e.clientY - rect.top) * scaleY;
+
+      if (gameState === 'start') {
+        resetGame(); gameState = 'playing'; return;
+      }
+      if (gameState === 'over') {
+        // Play Again button area
+        if (cx2 > CW / 2 - 148 && cx2 < CW / 2 - 16 && cy2 > 308 && cy2 < 350) {
+          resetGame(); gameState = 'playing'; return;
+        }
+        // Learn More button area
+        if (cx2 > CW / 2 + 16 && cx2 < CW / 2 + 148 && cy2 > 308 && cy2 < 350) {
+          window.location.href = 'about.html'; return;
+        }
+      }
+    });
+
+    /* ════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════ */
+    resetGame();
+    gameLoop();
+  </script>
+</body>
+
+</html>
